@@ -9,7 +9,7 @@ const props: GameDetailsProps = {
   releaseDate: '2020-11-21T23:00:00',
   rating: 'BR0',
   genres: ['Role-playing', 'Narrative'],
-  publisher: '2K'
+  publisher: 'Walktrough'
 }
 
 describe('<GameDetails />', () => {
@@ -44,6 +44,18 @@ describe('<GameDetails />', () => {
     expect(screen.getByRole('img', { name: /linux/i })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: /windows/i })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: /mac/i })).toBeInTheDocument()
+  })
+
+  it('should render the developer', () => {
+    renderWithTheme(<GameDetails {...props} />)
+
+    expect(screen.getByText(/Different Tales/i)).toBeInTheDocument()
+  })
+
+  it('should render the publisher', () => {
+    renderWithTheme(<GameDetails {...props} />)
+
+    expect(screen.getByText(/walktrough/i)).toBeInTheDocument()
   })
 
   it('should render free rating when BR0', () => {
