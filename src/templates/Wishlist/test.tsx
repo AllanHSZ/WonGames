@@ -2,14 +2,15 @@ import 'match-media-mock'
 import { screen } from '@testing-library/react'
 import { renderWithTheme } from 'utils/tests/helpers'
 
-import Wishlist from '.'
+import Wishlist, { WishlistTemplateProps } from '.'
 
 import gamesMock from 'components/GameCardSlider/mock'
 import highlightMock from 'components/Highlight/mock'
 
-const props = {
+const props: WishlistTemplateProps = {
   games: gamesMock,
   recommendedHighlight: highlightMock,
+  recommendedTitle: 'You may like these games',
   recommendedGames: gamesMock
 }
 
@@ -35,6 +36,7 @@ describe('<Wishlist />', () => {
   it('should render empty when there are no games', () => {
     renderWithTheme(
       <Wishlist
+        recommendedTitle={props.recommendedTitle}
         recommendedGames={gamesMock}
         recommendedHighlight={highlightMock}
       />
