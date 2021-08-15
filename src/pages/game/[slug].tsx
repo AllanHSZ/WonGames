@@ -4,19 +4,22 @@ import { initializeApollo } from 'utils/apollo'
 
 import Game, { GameTemplateProps } from 'templates/Game'
 
-import gamesMock from 'components/GameCardSlider/mock'
-import highlightMock from 'components/Highlight/mock'
 import { QueryGames, QueryGamesVariables } from 'graphql/generated/QueryGames'
 import { QUERY_GAMES, QUERY_GAME_BY_SLUG } from 'graphql/queries/games'
-import { QUERY_RECOMMENDED } from 'graphql/queries/recommended'
 import { QueryRecommended } from 'graphql/generated/QueryRecommended'
+import { QUERY_RECOMMENDED } from 'graphql/queries/recommended'
+import { QUERY_UPCOMING } from 'graphql/queries/upcoming'
 import {
   QueryGameBySlug,
   QueryGameBySlugVariables
 } from 'graphql/generated/QueryGameBySlug'
+import {
+  QueryUpcoming,
+  QueryUpcomingVariables
+} from 'graphql/generated/QueryUpcoming'
 
+import { gamesMapper, highlightMapper } from 'utils/mappers'
 import { getImageUrl } from 'utils/getImageUrl '
-import { gamesMapper } from 'utils/mappers'
 
 const apolloClient = initializeApollo()
 
@@ -29,6 +32,7 @@ export default function Index(props: GameTemplateProps) {
   return <Game {...props} />
 }
 
+// gerar em build time (/game/bla, /bame/foo ...)
 export async function getStaticPaths() {
   const { data } = await apolloClient.query<QueryGames, QueryGamesVariables>({
     query: QUERY_GAMES,
@@ -43,6 +47,7 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
+  // Get game data
   const { data } = await apolloClient.query<
     QueryGameBySlug,
     QueryGameBySlugVariables
@@ -57,9 +62,17 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const game = data.games[0]
 
+  // get recommended games
   const { data: recommended } = await apolloClient.query<QueryRecommended>({
     query: QUERY_RECOMMENDED
   })
+
+  // get upcoming games and highlight
+  const TODAY = new Date().toISOString().slice(0, 10)
+  const { data: upcoming } = await apolloClient.query<
+    QueryUpcoming,
+    QueryUpcomingVariables
+  >({ query: QUERY_UPCOMING, variables: { date: TODAY } })
 
   return {
     props: {
@@ -83,8 +96,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         rating: game.rating,
         genres: game.categories.map(({ name }) => name)
       },
-      upcomingGames: gamesMock,
-      upcomingHighlight: highlightMock,
+      upcomingTitle: upcoming.showcase?.upcomingGames?.title,
+      upcomingGames: gamesMapper(upcoming.upcomingGames),
+      upcomingHighlight: highlightMapper(
+        upcoming.showcase?.upcomingGames?.highlight
+      ),
       recommendedTitle: recommended.recommended?.section?.title,
       recommendedGames: gamesMapper(recommended.recommended?.section?.games)
     }
