@@ -32,14 +32,14 @@ export const QUERY_HOME = gql`
       newGames {
         title
         highlight {
-          ...HighlighFragment
+          ...HighlightFragment
         }
       }
 
       popularGames {
         title
         highlight {
-          ...HighlighFragment
+          ...HighlightFragment
         }
         games(limit: 8) {
           ...GameFragment
@@ -49,14 +49,14 @@ export const QUERY_HOME = gql`
       upcomingGames {
         title
         highlight {
-          ...HighlighFragment
+          ...HighlightFragment
         }
       }
 
       freeGames {
         title
         highlight {
-          ...HighlighFragment
+          ...HighlightFragment
         }
       }
     }
