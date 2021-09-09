@@ -39,7 +39,7 @@ const Menu = ({ username }: MenuProps) => {
       <MediaMatch greaterThan="medium">
         <S.MenuNav>
           <Link href="/" passHref>
-            <S.MenuLink>Home</S.MenuLink>
+            <S.MenuLink>Renan</S.MenuLink>
           </Link>
           <Link href="/games" passHref>
             <S.MenuLink>Explore</S.MenuLink>
