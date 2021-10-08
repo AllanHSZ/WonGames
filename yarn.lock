@@ -2841,10 +2841,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-slick@^0.23.4":
-  version "0.23.4"
-  resolved "https://registry.yarnpkg.com/@types/react-slick/-/react-slick-0.23.4.tgz#c97e2a9e7e3d1933c68593b8e82752fab1e8ce53"
-  integrity sha512-vXoIy4GUfB7/YgqubR4H7RALo+pRdMYCeLgWwV3MPwl5pggTlEkFBTF19R7u+LJc85uMqC7RfsbkqPLMQ4ab+A==
+"@types/react-slick@^0.23.6":
+  version "0.23.6"
+  resolved "https://registry.yarnpkg.com/@types/react-slick/-/react-slick-0.23.6.tgz#d9e7e2cfc6f250da3db2d74c54dc7f1e8bb7ceb4"
+  integrity sha512-dSsiEWatKtI5HvmCmE3g5chAaMMosR9krZwtMryXeDuKSgFxzgtH1wh4+QqXT9Eq87HJ948w6vFKD0loc9X26Q==
   dependencies:
     "@types/react" "*"
 
