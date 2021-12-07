@@ -41,8 +41,10 @@ export const Description = styled.p`
 export const ButtonsWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
+    gap: ${theme.spacings.xsmall};
     flex-direction: column;
     align-items: center;
+
     > button {
       width: 100%;
       margin-bottom: ${theme.spacings.xxsmall};
