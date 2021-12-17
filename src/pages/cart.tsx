@@ -22,6 +22,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
+      session,
       recommendedTitle: data.recommended?.section?.title,
       recommendedGames: gamesMapper(data.recommended?.section?.games),
       recommendedHighlight: highlightMapper(
