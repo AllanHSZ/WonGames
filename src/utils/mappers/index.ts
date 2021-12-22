@@ -5,6 +5,7 @@ import {
 } from 'graphql/generated/QueryHome'
 import { QueryOrders_orders } from 'graphql/generated/QueryOrders'
 import { QueryWishlist_wishlists_games } from 'graphql/generated/QueryWishlist'
+
 import { getImageUrl } from 'utils/getImageUrl '
 import formatPrice from 'utils/format-price'
 
@@ -87,7 +88,7 @@ export const ordersMapper = (orders: QueryOrders_orders[]) => {
             title: game.name,
             downloadLink:
               'https://wongames.com/game/download/yuYT56Tgh431LkjhNBgdf',
-            img: `http://localhost:1337${game.cover?.url}`,
+            img: getImageUrl(game.cover?.url),
             price: formatPrice(game.price)
           }))
         }

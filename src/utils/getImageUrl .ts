@@ -1,7 +1,11 @@
-export const getImageUrl = (url: string | undefined): string => {
-  if (!url) return ''
+export const getImageUrl = (url: string | undefined) => {
+  if (process.env.NEXT_PUBLIC_IMAGE_HOST) {
+    return `${process.env.NEXT_PUBLIC_IMAGE_HOST}${url}`
+  }
 
-  if (url.includes('http')) return url
+  if (url) {
+    return url
+  }
 
-  return `http://localhost:1337${url}`
+  return null
 }
