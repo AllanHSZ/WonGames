@@ -1,4 +1,8 @@
 export const getImageUrl = (url: string | undefined) => {
+  if (!url) return ''
+
+  if (url.includes('http')) return url
+
   if (process.env.NEXT_PUBLIC_IMAGE_HOST) {
     return `${process.env.NEXT_PUBLIC_IMAGE_HOST}${url}`
   }
