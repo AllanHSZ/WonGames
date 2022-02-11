@@ -75,6 +75,7 @@ exports[`<GameDetails /> should render the blocks 1`] = `
 
 <div
   class="c0"
+  data-cy="game-details"
 >
   <div
     class="c1"
