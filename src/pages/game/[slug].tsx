@@ -1,27 +1,11 @@
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
-import { initializeApollo } from 'utils/apollo'
 
 import Game, { GameTemplateProps } from 'templates/Game'
-
-import { QueryGames, QueryGamesVariables } from 'graphql/generated/QueryGames'
-import { QUERY_GAMES, QUERY_GAME_BY_SLUG } from 'graphql/queries/games'
-import { QueryRecommended } from 'graphql/generated/QueryRecommended'
-import { QUERY_RECOMMENDED } from 'graphql/queries/recommended'
-import { QUERY_UPCOMING } from 'graphql/queries/upcoming'
-import {
-  QueryGameBySlug,
-  QueryGameBySlugVariables
-} from 'graphql/generated/QueryGameBySlug'
-import {
-  QueryUpcoming,
-  QueryUpcomingVariables
-} from 'graphql/generated/QueryUpcoming'
-
-import { gamesMapper, highlightMapper } from 'utils/mappers'
+import { GameMock, getRecomended, SimpleGameMock } from 'mock/game'
 import { getImageUrl } from 'utils/getImageUrl '
-
-const apolloClient = initializeApollo()
+import { gamesMapper, highlightMapper } from 'utils/mappers'
+import { getUpcoming } from 'mock/home'
 
 export default function Index(props: GameTemplateProps) {
   const router = useRouter()
@@ -34,12 +18,7 @@ export default function Index(props: GameTemplateProps) {
 
 // gerar em build time (/game/bla, /bame/foo ...)
 export async function getStaticPaths() {
-  const { data } = await apolloClient.query<QueryGames, QueryGamesVariables>({
-    query: QUERY_GAMES,
-    variables: { limit: 9 }
-  })
-
-  const paths = data.games.map(({ slug }) => ({
+  const paths = Object.values(SimpleGameMock).map(({ slug }) => ({
     params: { slug }
   }))
 
@@ -47,39 +26,22 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  // Get game data
-  const { data } = await apolloClient.query<
-    QueryGameBySlug,
-    QueryGameBySlugVariables
-  >({
-    query: QUERY_GAME_BY_SLUG,
-    variables: { slug: `${params?.slug}` },
-    fetchPolicy: 'no-cache'
-  })
-
-  if (!data.games.length) {
+  if (typeof params?.slug !== 'string') {
     return { notFound: true }
   }
 
-  const game = data.games[0]
+  const game = GameMock[params?.slug]!
 
-  // get recommended games
-  const { data: recommended } = await apolloClient.query<QueryRecommended>({
-    query: QUERY_RECOMMENDED
-  })
+  if (!game) return { notFound: true }
 
-  // get upcoming games and highlight
-  const TODAY = new Date().toISOString().slice(0, 10)
-  const { data: upcoming } = await apolloClient.query<
-    QueryUpcoming,
-    QueryUpcomingVariables
-  >({ query: QUERY_UPCOMING, variables: { date: TODAY } })
+  const coming = getUpcoming(true)
+  const recommended = getRecomended()
 
   return {
     revalidate: 60,
     props: {
       slug: params?.slug,
-      cover: getImageUrl(game.cover?.src),
+      cover: getImageUrl(game.cover?.url),
       gameInfo: {
         id: game.id,
         title: game.name,
@@ -99,13 +61,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         rating: game.rating,
         genres: game.categories.map(({ name }) => name)
       },
-      upcomingTitle: upcoming.showcase?.upcomingGames?.title,
-      upcomingGames: gamesMapper(upcoming.upcomingGames),
-      upcomingHighlight: highlightMapper(
-        upcoming.showcase?.upcomingGames?.highlight
-      ),
-      recommendedTitle: recommended.recommended?.section?.title,
-      recommendedGames: gamesMapper(recommended.recommended?.section?.games)
+      upcomingTitle: coming.title,
+      upcomingGames: gamesMapper(coming.games),
+      upcomingHighlight: highlightMapper(coming.highlight),
+      recommendedTitle: recommended.title,
+      recommendedGames: gamesMapper(recommended.games)
     }
   }
 }

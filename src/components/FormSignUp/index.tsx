@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { signIn } from 'next-auth/client'
-import { useMutation } from '@apollo/client'
-import { MUTATION_REGISTER } from 'graphql/mutations/register'
 import { UsersPermissionsRegisterInput } from 'graphql/generated/globalTypes'
 import {
   AccountCircle,
@@ -15,6 +13,7 @@ import Button from 'components/Button'
 import TextField from 'components/TextField'
 import { FormWrapper, FormLink, FormLoading, FormError } from 'components/Form'
 import { FieldErrors, signUpValidate } from 'utils/validations'
+import { createUserMock, getUsersAsString } from 'mock/user'
 
 const FormSignUp = () => {
   const [formError, setFormError] = useState('')
@@ -25,19 +24,17 @@ const FormSignUp = () => {
     password: ''
   })
 
-  const [createUser, { error, loading }] = useMutation(MUTATION_REGISTER, {
-    onError: (err) =>
-      setFormError(
-        err?.graphQLErrors[0]?.extensions?.exception.data.message[0].messages[0]
-          .message
-      ),
-    onCompleted: () => {
-      !error &&
-        signIn('credentials', {
-          email: values.email,
-          password: values.password,
-          callbackUrl: '/'
-        })
+  const { createUser, loading } = createUserMock({
+    onError: (err) => setFormError(err),
+    onCompleted: (success) => {
+      if (!success) return
+
+      signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        users: getUsersAsString(),
+        callbackUrl: '/'
+      })
     }
   })
 
@@ -57,15 +54,10 @@ const FormSignUp = () => {
     }
 
     setFieldError({})
-
     createUser({
-      variables: {
-        input: {
-          username: values.username,
-          email: values.email,
-          password: values.password
-        }
-      }
+      username: values.username,
+      email: values.email,
+      password: values.password
     })
   }
 

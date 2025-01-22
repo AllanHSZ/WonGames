@@ -1,16 +1,10 @@
-import { useMutation } from '@apollo/client'
-import { GameCardProps } from 'components/GameCard'
-import { QueryWishlist_wishlists_games } from 'graphql/generated/QueryWishlist'
-import {
-  MUTATION_CREATE_WISHLIST,
-  MUTATION_UPDATE_WISHLIST
-} from 'graphql/mutations/wishlist'
-import { useQueryWishlist } from 'graphql/queries/wishlist'
-import { useSession } from 'next-auth/client'
-import { useMemo } from 'react'
-import { useState } from 'react'
-import { createContext, useContext, useEffect } from 'react'
+import { useState, createContext, useContext, useEffect } from 'react'
+
 import { gamesMapper } from 'utils/mappers'
+import { GameCardProps } from 'components/GameCard'
+import { getStorageItem, setStorageItem } from 'utils/localStorage'
+import { Query_Games } from 'graphql/generated/QueryHome'
+import { SimpleGameMock } from 'mock/game'
 
 export type WishlistContextData = {
   items: GameCardProps[]
@@ -36,83 +30,34 @@ export type WishlistProviderProps = {
   children: React.ReactNode
 }
 
+const WISHLIST_KEY = 'wishItems'
+
 const WishlistProvider = ({ children }: WishlistProviderProps) => {
-  const [session] = useSession()
-  const [wishlistId, setWishlistId] = useState<string | null>()
-  const [wishlistItems, setWishlistItems] = useState<
-    QueryWishlist_wishlists_games[]
-  >([])
-
-  const [createList, { loading: loadingCreate }] = useMutation(
-    MUTATION_CREATE_WISHLIST,
-    {
-      context: { session },
-      onCompleted: (data) => {
-        setWishlistItems(data?.createWishlist?.wishlist?.games || [])
-        setWishlistId(data?.createWishlist?.wishlist?.id)
-      }
-    }
-  )
-
-  const [updateList, { loading: loadingUpdate }] = useMutation(
-    MUTATION_UPDATE_WISHLIST,
-    {
-      context: { session },
-      onCompleted: (data) => {
-        setWishlistItems(data?.updateWishlist?.wishlist?.games || [])
-      }
-    }
-  )
-
-  const { data, loading: loadingQuery } = useQueryWishlist({
-    skip: !session?.user?.email,
-    context: { session },
-    variables: {
-      identifier: session?.user?.email as string
-    }
-  })
+  const [wishlistItems, setWishlistItems] = useState<Query_Games[]>([])
 
   useEffect(() => {
-    setWishlistItems(data?.wishlists[0]?.games || [])
-    setWishlistId(data?.wishlists[0]?.id)
-  }, [data])
+    const ids = getStorageItem(WISHLIST_KEY)
+    const games = ids?.map((id) => SimpleGameMock[id])
 
-  const wishlistIds = useMemo(
-    () => wishlistItems.map((game) => game.id),
-    [wishlistItems]
-  )
+    setWishlistItems(games || [])
+  }, [])
+
+  const updateList = (games: Query_Games[]) => {
+    const ids = games.map((game) => game.id)
+    setStorageItem(WISHLIST_KEY, ids)
+    setWishlistItems(games)
+  }
 
   const isInWishlist = (id: string) =>
     !!wishlistItems.find((game) => game.id === id)
 
   const addToWishlist = (id: string) => {
-    // se não existir wishlist - cria
-    if (!wishlistId) {
-      return createList({
-        variables: { input: { data: { games: [...wishlistIds, id] } } }
-      })
-    }
-
-    // // senão atualiza a wishlist existente
-    return updateList({
-      variables: {
-        input: {
-          where: { id: wishlistId },
-          data: { games: [...wishlistIds, id] }
-        }
-      }
-    })
+    const items = [...wishlistItems, SimpleGameMock[id]]
+    updateList(items)
   }
 
   const removeFromWishlist = (id: string) => {
-    return updateList({
-      variables: {
-        input: {
-          where: { id: wishlistId },
-          data: { games: wishlistIds.filter((gameId: string) => gameId !== id) }
-        }
-      }
-    })
+    updateList(wishlistItems.filter((item) => item.id !== id))
   }
 
   return (
@@ -122,7 +67,7 @@ const WishlistProvider = ({ children }: WishlistProviderProps) => {
         isInWishlist,
         addToWishlist,
         removeFromWishlist,
-        loading: loadingQuery || loadingCreate || loadingUpdate
+        loading: false
       }}
     >
       {children}

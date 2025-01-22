@@ -20,6 +20,7 @@ export type GameCardProps = {
   ribbon?: React.ReactNode
   ribbonColor?: RibbonColors
   ribbonSize?: RibbonSizes
+  isGamePage?: boolean
 }
 
 const GameCard = ({
@@ -32,6 +33,7 @@ const GameCard = ({
   promotionalPrice,
   ribbon,
   ribbonColor = 'primary',
+  isGamePage,
   ribbonSize
 }: GameCardProps) => (
   <S.Wrapper data-cy="game-card">
@@ -40,13 +42,13 @@ const GameCard = ({
         {ribbon}
       </Ribbon>
     )}
-    <Link href={`game/${slug}`} passHref>
+    <Link href={isGamePage ? slug : `game/${slug}`} passHref>
       <S.ImageBox>
         <Image src={img} alt={title} layout="fill" objectFit="fill" />
       </S.ImageBox>
     </Link>
     <S.Content>
-      <Link href={`game/${slug}`} passHref>
+      <Link href={isGamePage ? slug : `game/${slug}`} passHref>
         <S.Info>
           <S.Title>{title}</S.Title>
           <S.Developer>{developer}</S.Developer>

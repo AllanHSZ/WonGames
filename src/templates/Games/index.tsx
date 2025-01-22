@@ -1,19 +1,17 @@
 import { ParsedUrlQueryInput } from 'querystring'
 import { useRouter } from 'next/router'
 
-import { useQueryGames } from 'graphql/queries/games'
-import { parseQueryStringToFilter, parseQueryStringToWhere } from 'utils/filter'
-
 import Base from 'templates/Base'
-import { KeyboardArrowDown as ArrowDown } from '@styled-icons/material-outlined/KeyboardArrowDown'
-
-import ExploreSidebar, { ItemProps } from 'components/ExploreSidebar'
+import Empty from 'components/Empty'
 import GameCard from 'components/GameCard'
+import ExploreSidebar, { ItemProps } from 'components/ExploreSidebar'
+import { KeyboardArrowDown as ArrowDown } from '@styled-icons/material-outlined/KeyboardArrowDown'
+import { parseQueryStringToFilter, parseQueryStringToWhere } from 'utils/filter'
+import { useQueryGames } from 'mock/use-query-games'
+import { getImageUrl } from 'utils/getImageUrl '
 import { Grid } from 'components/Grid'
 
 import * as S from './styles'
-import Empty from 'components/Empty'
-import { getImageUrl } from 'utils/getImageUrl '
 
 export type GamesTemplateProps = {
   filterItems: ItemProps[]
@@ -72,7 +70,7 @@ const GamesTemplate = ({ filterItems }: GamesTemplateProps) => {
                     title={game.name}
                     slug={game.slug}
                     developer={game.developers[0].name}
-                    img={getImageUrl(game.cover!.url)}
+                    img={getImageUrl(game.cover!.url)!}
                     price={game.price}
                   />
                 ))}

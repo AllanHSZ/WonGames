@@ -1,6 +1,8 @@
-import { useQueryGames } from 'graphql/queries/games'
 import { useContext, createContext, useState, useEffect } from 'react'
 import formatPrice from 'utils/format-price'
+
+import { SimpleGameMock } from 'mock/game'
+import { Query_Games } from 'graphql/generated/QueryHome'
 import { getStorageItem, setStorageItem } from 'utils/localStorage'
 import { cartMapper } from 'utils/mappers'
 
@@ -45,33 +47,24 @@ export type CartProviderProps = {
 
 const CartProvider = ({ children }: CartProviderProps) => {
   const [cartItems, setCartItems] = useState<string[]>([])
+  const [games, setGames] = useState<Query_Games[]>([])
 
   useEffect(() => {
-    const data = getStorageItem(CART_KEY)
+    const data = getStorageItem(CART_KEY) as string[]
 
     if (data) {
       setCartItems(data)
+      setGames(data.map((id) => SimpleGameMock[id]))
     }
   }, [])
 
-  const { data, loading } = useQueryGames({
-    skip: !cartItems?.length,
-    variables: {
-      where: {
-        id: cartItems
-      }
-    }
-  })
-
-  const total = data?.games.reduce((acc, game) => {
-    return acc + game.price
-  }, 0)
+  const total = games.reduce((acc, game) => acc + game.price, 0)
 
   const isInCart = (id: string) => (id ? cartItems.includes(id) : false)
-
   const saveCart = (cartItems: string[]) => {
     setCartItems(cartItems)
     setStorageItem(CART_KEY, cartItems)
+    setGames(cartItems.map((id) => SimpleGameMock[id]))
   }
 
   const addToCart = (id: string) => {
@@ -90,14 +83,14 @@ const CartProvider = ({ children }: CartProviderProps) => {
   return (
     <CartContext.Provider
       value={{
-        items: cartMapper(data?.games),
+        items: cartMapper(games),
         quantity: cartItems.length,
         total: formatPrice(total || 0),
         isInCart,
         addToCart,
         removeFromCart,
         clearCart,
-        loading
+        loading: false
       }}
     >
       {children}

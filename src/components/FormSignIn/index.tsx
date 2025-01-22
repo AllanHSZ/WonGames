@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 import { Email, Lock, ErrorOutline } from '@styled-icons/material-outlined'
 
+import { getUsersAsString } from 'mock/user'
 import { FieldErrors, signInValidate } from 'utils/validations'
 import { FormLink, FormWrapper, FormLoading, FormError } from 'components/Form'
 import TextField from 'components/TextField'
@@ -42,6 +43,7 @@ const FormSignIn = () => {
     const result = await signIn('credentials', {
       ...values,
       redirect: false,
+      users: getUsersAsString(),
       callbackUrl: `${window.location.origin}${query?.callbackUrl || ''}`
     })
 

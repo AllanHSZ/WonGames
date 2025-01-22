@@ -1,24 +1,18 @@
-import { initializeApollo } from 'utils/apollo'
-import { QUERY_GAMES } from 'graphql/queries/games'
-import { QueryGames, QueryGamesVariables } from 'graphql/generated/QueryGames'
-import { parseQueryStringToWhere } from 'utils/filter'
-
-import GamesTemplate, { GamesTemplateProps } from 'templates/Games'
-import { GetServerSidePropsContext } from 'next'
 import {
   genreFields,
   platformFields,
   priceFields,
   sortFields
 } from 'utils/filter/fields'
+import GamesTemplate, { GamesTemplateProps } from 'templates/Games'
+import { GetServerSidePropsContext } from 'next'
 
 export default function GamesPage(props: GamesTemplateProps) {
   return <GamesTemplate {...props} />
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {
-  const apolloClient = initializeApollo()
-
   const filterPrice = {
     title: 'Price',
     name: 'price_lte',
@@ -54,18 +48,8 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
     filterCategories
   ]
 
-  await apolloClient.query<QueryGames, QueryGamesVariables>({
-    query: QUERY_GAMES,
-    variables: {
-      limit: 15,
-      where: parseQueryStringToWhere({ queryString: query, filterItems }),
-      sort: query.sort as string | null
-    }
-  })
-
   return {
     props: {
-      initialApolloState: apolloClient.cache.extract(),
       filterItems
     }
   }

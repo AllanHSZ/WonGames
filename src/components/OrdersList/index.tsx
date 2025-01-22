@@ -3,7 +3,7 @@ import GameItem, { GameItemProps, PaymentInfoProps } from 'components/GameItem'
 import Heading from 'components/Heading'
 import * as S from './styles'
 
-type OrderProps = {
+export type OrderProps = {
   id: string
   paymentInfo: PaymentInfoProps
   games: GameItemProps[]

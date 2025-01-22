@@ -83,9 +83,10 @@ const Game = ({
         title={upcomingTitle}
         games={upcomingGames}
         highlight={upcomingHighlight}
+        isGamePage
       />
 
-      <Showcase title={recommendedTitle} games={recommendedGames} />
+      <Showcase title={recommendedTitle} games={recommendedGames} isGamePage />
     </S.Main>
   </Base>
 )

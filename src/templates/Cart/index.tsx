@@ -7,10 +7,10 @@ import Heading from 'components/Heading'
 import Showcase from 'components/Showcase'
 import PaymentForm from 'components/PaymentForm'
 import CartList, { CartListProps } from 'components/CartList'
+import { HighlightProps } from 'components/Highlight'
+import { GameCardProps } from 'components/GameCard'
 import { Container } from 'components/Container'
 import { Divider } from 'components/Divider'
-import { GameCardProps } from 'components/GameCard'
-import { HighlightProps } from 'components/Highlight'
 
 import * as S from './styles'
 

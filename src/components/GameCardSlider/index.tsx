@@ -9,6 +9,7 @@ import * as S from './styles'
 export type GameCardSliderProps = {
   items: GameCardProps[]
   color?: 'white' | 'black'
+  isGamePage?: boolean
 }
 
 const settings: SliderSettings = {
@@ -50,11 +51,15 @@ const settings: SliderSettings = {
   prevArrow: <ArrowLeft aria-label="previous games" />
 }
 
-const GameCardSlider = ({ items, color = 'white' }: GameCardSliderProps) => (
+const GameCardSlider = ({
+  items,
+  color = 'white',
+  isGamePage
+}: GameCardSliderProps) => (
   <S.Wrapper color={color}>
     <Slider settings={settings}>
       {items.map((item, index) => (
-        <GameCard key={index} {...item} />
+        <GameCard key={index} {...item} isGamePage={isGamePage} />
       ))}
     </Slider>
   </S.Wrapper>

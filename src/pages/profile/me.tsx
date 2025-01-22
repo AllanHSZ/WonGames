@@ -1,41 +1,31 @@
 import { GetServerSidePropsContext } from 'next'
 
 import Profile from 'templates/Profile'
-import FormProfile, { FormProfileProps } from 'components/FormProfile'
+import FormProfile from 'components/FormProfile'
 
 import protectedRoutes from 'utils/protected-routes'
-import { initializeApollo } from 'utils/apollo'
-import {
-  QueryProfileMe,
-  QueryProfileMeVariables
-} from 'graphql/generated/QueryProfileMe'
-import { QUERY_PROFILE_ME } from 'graphql/queries/profile'
+import { getUserMock } from 'mock/user'
 
-export default function Me(props: FormProfileProps) {
+type Props = {
+  id: number
+}
+
+export default function Me(props: Props) {
+  const user = getUserMock(props.id as number)
+
   return (
     <Profile>
-      <FormProfile {...props} />
+      <FormProfile {...user} />
     </Profile>
   )
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await protectedRoutes(context)
-  const apolloClient = initializeApollo(null, session)
 
   if (!session) return { props: {} }
 
-  const { data } = await apolloClient.query<
-    QueryProfileMe,
-    QueryProfileMeVariables
-  >({
-    query: QUERY_PROFILE_ME,
-    variables: {
-      identifier: session?.id as string
-    }
-  })
-
   return {
-    props: { session, username: data.user?.username, email: data.user?.email }
+    props: { session, id: session.id }
   }
 }

@@ -8,17 +8,14 @@
 // ====================================================
 
 export interface QueryWishlist_wishlists_games_cover {
-  __typename: "UploadFile";
   url: string;
 }
 
 export interface QueryWishlist_wishlists_games_developers {
-  __typename: "Developer";
   name: string;
 }
 
 export interface QueryWishlist_wishlists_games {
-  __typename: "Game";
   id: string;
   name: string;
   slug: string;

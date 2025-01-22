@@ -10,13 +10,15 @@ export type ShowcaseProps = {
   highlight?: HighlightProps
   games?: GameCardProps[]
   color?: 'black' | 'white'
+  isGamePage?: boolean
 }
 
 const Showcase = ({
   title,
   highlight,
   games,
-  color = 'white'
+  color = 'white',
+  isGamePage
 }: ShowcaseProps) => (
   <S.Wrapper data-cy={title || 'showcase'}>
     {!!title && (
@@ -25,7 +27,9 @@ const Showcase = ({
       </Heading>
     )}
     {!!highlight && <Highlight {...highlight} />}
-    {!!games && <GameCardSlider items={games} color={color} />}
+    {!!games && (
+      <GameCardSlider items={games} color={color} isGamePage={isGamePage} />
+    )}
   </S.Wrapper>
 )
 

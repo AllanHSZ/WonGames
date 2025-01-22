@@ -1,15 +1,16 @@
-import { QueryGames_games } from 'graphql/generated/QueryGames'
 import {
-  QueryHome_banners,
-  QueryHome_sections_freeGames_highlight
+  Query_Games,
+  Query_Highlight,
+  QueryHome_Banners
 } from 'graphql/generated/QueryHome'
 import { QueryOrders_orders } from 'graphql/generated/QueryOrders'
-import { QueryWishlist_wishlists_games } from 'graphql/generated/QueryWishlist'
 
 import { getImageUrl } from 'utils/getImageUrl '
 import formatPrice from 'utils/format-price'
+import { GameCardProps } from 'components/GameCard'
+import { OrderProps } from 'components/OrdersList'
 
-export const bannerMapper = (banners: QueryHome_banners[]) => {
+export const bannerMapper = (banners: QueryHome_Banners[]) => {
   return banners.map((banner) => ({
     img: getImageUrl(banner.image?.url),
     title: banner.title,
@@ -24,23 +25,22 @@ export const bannerMapper = (banners: QueryHome_banners[]) => {
   }))
 }
 
-export const gamesMapper = (
-  games: QueryGames_games[] | QueryWishlist_wishlists_games[] | null | undefined
-) => {
+export const gamesMapper = (games: Query_Games[] | null | undefined) => {
   return games
-    ? games.map((game) => ({
+    ? games.map<GameCardProps>((game) => ({
         id: game.id,
         title: game.name,
         slug: game.slug,
         developer: game.developers[0].name,
-        img: getImageUrl(game.cover?.url),
+        img: getImageUrl(game.cover!.url)!,
+        promotionalPrice: game.promotionalPrice || 0,
         price: game.price
       }))
     : []
 }
 
 export const highlightMapper = (
-  highlight: QueryHome_sections_freeGames_highlight | null | undefined
+  highlight: Query_Highlight | null | undefined
 ) => {
   return highlight
     ? {
@@ -55,28 +55,26 @@ export const highlightMapper = (
     : {}
 }
 
-export const cartMapper = (games: QueryGames_games[] | undefined) => {
+export const cartMapper = (games: Query_Games[] | undefined) => {
   return games
     ? games.map((game) => ({
         id: game.id,
-        img: getImageUrl(game.cover?.url),
+        img: getImageUrl(game.cover?.url)!,
         title: game.name,
         price: formatPrice(game.price)
       }))
     : []
 }
 
-export const ordersMapper = (orders: QueryOrders_orders[]) => {
+export const ordersMapper = (orders: QueryOrders_orders[]): OrderProps[] => {
   return orders
-    ? orders.map((order) => {
+    ? orders.map<OrderProps>((order) => {
         return {
           id: order.id,
           paymentInfo: {
             flag: order.card_brand,
-            img: order.card_brand ? `/img/cards/${order.card_brand}.png` : null,
-            number: order.card_last4
-              ? `**** **** **** ${order.card_last4}`
-              : 'Free Game',
+            img: `/img/cards/${order.card_brand}.png`,
+            number: order.card_last4 ? `**** **** **** 1234` : 'Free Game',
             purchaseDate: `Purchase made on ${new Intl.DateTimeFormat('en-US', {
               day: 'numeric',
               month: 'short',
@@ -88,7 +86,7 @@ export const ordersMapper = (orders: QueryOrders_orders[]) => {
             title: game.name,
             downloadLink:
               'https://wongames.com/game/download/yuYT56Tgh431LkjhNBgdf',
-            img: getImageUrl(game.cover?.url),
+            img: getImageUrl(game.cover?.url)!,
             price: formatPrice(game.price)
           }))
         }
