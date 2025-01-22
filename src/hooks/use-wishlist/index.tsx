@@ -36,7 +36,7 @@ const WishlistProvider = ({ children }: WishlistProviderProps) => {
   const [wishlistItems, setWishlistItems] = useState<Query_Games[]>([])
 
   useEffect(() => {
-    const ids = getStorageItem(WISHLIST_KEY)
+    const ids = getStorageItem(WISHLIST_KEY) as string[]
     const games = ids?.map((id) => SimpleGameMock[id])
 
     setWishlistItems(games || [])

@@ -1,8 +1,6 @@
-import { QUERY_GAMES } from 'graphql/queries/games'
-
 export const gamesMock = {
   request: {
-    query: QUERY_GAMES,
+    query: null,
     variables: { where: { id: ['1', '2'] } }
   },
   result: {
